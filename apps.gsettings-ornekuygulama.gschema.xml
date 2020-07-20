@@ -1,0 +1,19 @@
+<schemalist>
+  <schema id="apps.gsettings-ornekuygulama" path="/apps/gsettings-ornekuygulama/">
+    <key type="as" name="anahtarlar">
+      <default>["deneme1", "deneme2"]</default>
+      <summary>Anahtarlar</summary>
+      <description>Anahtarlar.</description>
+    </key>
+<key type="as" name="ca-certler">
+      <default>[]</default>
+      <summary>CA certler</summary>
+      <description>CA Certler.</description>
+    </key>
+ <key type="as" name="normalcertler">
+      <default>[]</default>
+      <summary>Normal certler</summary>
+      <description>Normal Certler.</description>
+    </key>
+  </schema>
+</schemalist>
