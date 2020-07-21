@@ -15,32 +15,40 @@ if not os.path.isfile(F_PATH):
 
 
 def execute_it(cmd):
-    '''li = list(cmd.split(" ")) 
-    subprocess.run(li)'''
     output = subprocess.check_output(['bash','-c', cmd])
     return output.decode("utf-8")
 
-class App(object):
-    def __init__(self):
-        
 
+class MainWindow(Gtk.Window):
+    def __init__(self):
+        Gtk.Window.__init__(self, title="Miço")
+        self.set_default_size(200, 100)
+        self.set_border_width(30)
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
-        btn1 = Gtk.Button("Choose File")
-        btn1.connect("clicked", self.on_file_clicked)
+        self.add(box)
+
+        ca_btn = Gtk.Button("Create CA key/crt")
+        ca_btn.connect("clicked", self.ca_keycert)
+        box.add(ca_btn)
+
+        btn1 = Gtk.Button("Add Normal Cert")
+        btn1.connect("clicked", self.normal_cert_fingerprint)
         box.add(btn1)
 
+    def ca_keycert(self, widget):
+        dialog = CA(self)
+        response = dialog.run()
 
-        window = Gtk.Window(type=Gtk.WindowType.TOPLEVEL)
-        window.set_title('Miço')
-        window.set_border_width(64)
-        window.connect("delete-event", Gtk.main_quit)
-        window.add(box)
-        window.show_all()
-        Gtk.main()
+        if response == Gtk.ResponseType.OK:
+            print("OK")
+        elif response == Gtk.ResponseType.CANCEL:
+            print("Cancelled otoca")
+
+        dialog.destroy()
 
     #optional: select_folder
-    def on_file_clicked(self, widget):
-        dialog = Gtk.FileChooserDialog("Select the certificate", None, Gtk.FileChooserAction.OPEN,
+    def normal_cert_fingerprint(self, widget):
+        dialog = Gtk.FileChooserDialog("Select the certificate", self, Gtk.FileChooserAction.OPEN,
         ("Cancel", Gtk.ResponseType.CANCEL, "Ok", Gtk.ResponseType.OK))
         response = dialog.run()
 
@@ -48,18 +56,93 @@ class App(object):
             # print("Secilen anahtar " + dialog.get_filename())
             cmd = "openssl x509 -noout -fingerprint -sha1 -inform pem -in " + dialog.get_filename()
             raw_finger = execute_it(cmd)[17:-1]
-
             normalcertler = keys.get_strv("normalcertler")
             normalcertler.append(raw_finger)
-            keys.set_strv(str(normalcertler))
+            keys.set_strv("normalcertler", normalcertler)
             print(normalcertler)
 
         elif response == Gtk.ResponseType.CANCEL:
-            print("Cancelled")
+            print("Cancelled cert")
         dialog.destroy()
-    
-if __name__ == "__main__":
-    app = App()
+
+class CA(Gtk.Dialog):
+    def __init__(self, parent):
+
+        # self, title, parent, flags (MODAL prevent interaction with main window until dialog returns), buttons
+        Gtk.Dialog.__init__(self, "CA Anahtar/Sertifika", parent, Gtk.DialogFlags.MODAL, ("Custom cancel text", Gtk.ResponseType.CANCEL,
+                             Gtk.STOCK_OK, self.ca_returns))
+        self.set_default_size(200, 100)
+        self.set_border_width(10)
+
+        # Content area
+        area = self.get_content_area()
+        ca_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        
+        # def create_key(bit, days, country, state, city, ou, cn):
+        bitlabel = Gtk.Label("Enter Bit:")
+        bit = Gtk.Entry()
+        ca_box.add(bitlabel)
+        ca_box.add(bit)
+
+        dayslabel = Gtk.Label("Enter days:")
+        days = Gtk.Entry()
+        ca_box.add(dayslabel)
+        ca_box.add(days)
+
+        countrylabel = Gtk.Label("Enter country (XX):")
+        country = Gtk.Entry()
+        ca_box.add(countrylabel)
+        ca_box.add(country)
+
+        statelabel = Gtk.Label("Enter state:")
+        state = Gtk.Entry()
+        ca_box.add(statelabel)
+        ca_box.add(state)
+
+        citylabel = Gtk.Label("Enter city:")
+        city = Gtk.Entry()
+        ca_box.add(citylabel)
+        ca_box.add(city)
+
+        oulabel = Gtk.Label("Enter organizational unit:")
+        ou = Gtk.Entry()
+        ca_box.add(oulabel)
+        ca_box.add(ou)
+
+        namelabel = Gtk.Label("Enter key/crt name:")
+        name = Gtk.Entry()
+        ca_box.add(namelabel)
+        ca_box.add(name)
+
+        okbutton = Gtk.Button("OK")
+        okbutton.connect("clicked", self.ca_returns)
+        ca_box.add(okbutton)
+
+
+        area.add(ca_box)
+        self.add(bit)
+        self.show_all()
+
+    def ca_returns(self, widget):
+        print("ca_returns func worked")
+        return Gtk.ResponseType.OK
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+win = MainWindow()
+win.connect("delete-event", Gtk.main_quit)
+win.show_all()
+Gtk.main()
