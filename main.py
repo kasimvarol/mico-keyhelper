@@ -36,7 +36,7 @@ class MainWindow(Gtk.Window):
         box.add(btn1)
 
     def ca_keycert(self, widget):
-        dialog = CA2(self)
+        dialog = CA(self)
         response = dialog.run()
 
         if response == Gtk.ResponseType.OK:
@@ -65,13 +65,12 @@ class MainWindow(Gtk.Window):
             print("Cancelled cert")
         dialog.destroy()
 
-class CA2(Gtk.Dialog):
+class CA(Gtk.Dialog):
     def __init__(self, parent):
-        Gtk.Dialog.__init__(self, title="CA Anahtar/Sertifika", transient_for=parent, flags=0)
-        self.add_buttons(
-            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK
-        )
 
+        # self, title, parent, flags (MODAL prevent interaction with main window until dialog returns), buttons
+        Gtk.Dialog.__init__(self, "CA Anahtar/Sertifika", parent, Gtk.DialogFlags.MODAL, ("Custom cancel text", Gtk.ResponseType.CANCEL,
+                             Gtk.STOCK_OK, self.ca_returns))
         self.set_default_size(200, 100)
         self.set_border_width(10)
 
@@ -124,12 +123,23 @@ class CA2(Gtk.Dialog):
         self.add(bit)
         self.show_all()
 
-        
     def ca_returns(self, widget):
         print("ca_returns func worked")
-        Gtk.ResponseType.OK
-        self.destroy()
-        return True
+        return Gtk.ResponseType.OK
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 win = MainWindow()
