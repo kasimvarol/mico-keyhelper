@@ -1,7 +1,7 @@
 <schemalist>
   <schema id="apps.gsettings-ornekuygulama" path="/apps/gsettings-ornekuygulama/">
     <key type="as" name="anahtarlar">
-      <default>["deneme1", "deneme2"]</default>
+      <default>[]</default>
       <summary>Anahtarlar</summary>
       <description>Anahtarlar.</description>
     </key>
